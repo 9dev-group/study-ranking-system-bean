@@ -32,8 +32,9 @@
 
 - consumer 에서는 중복집계를 어떻게 피할지 고민 합니다.
 - aggregation 을 어떻게 해야할지 고민이 필요합니다.
-- checkpoint pattern을 고민해 본다.
-- outbox 를 대신할 cdc를 고민한다.
+- checkpoint pattern 을 고민해 본다.
+- outbox 를 대신할 cdc 를 고민한다.
+- scheduler 끼리 레이스 컨디션을 고려해야 합니다.(shedlock)
 
 ## 시퀀스다이어그램
 
@@ -157,6 +158,22 @@ sequenceDiagram
 | payload         | json    |     | 데이터               |
 | is_processed    | Boolean |     | 진행여부              |
 | created_at      | Long    |     | 생성 시간             |
+
+## Main 로직 설명
+
+###  EventHandler
+#### description
+
+- Outbox 테이블에 데이터를 insert 합니다. 
+- insert 가 성공하면 kafka event 를 발행 합니다.
+- kafka send 결과에 따른 후처리를 whenComplete(callback) 함수로 처리합니다.
+
+### OutboxScheduler
+#### description
+
+- event 발행이 실패한 경우 scheduler 를 통해서 event 를 발행합니다.
+- event 목록을 조회 후 event 를 발행하고 outbox 테이블에서 제거합니다.
+- @Transactional 은 조회와 쓰기에 각각 적용합니다.(transaction 분리)
 
 ## Api
 

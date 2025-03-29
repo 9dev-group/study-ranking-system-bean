@@ -4,6 +4,7 @@ import com.gameleaderboard.gameleaderboard.config.KafkaProperties;
 import com.gameleaderboard.gameleaderboard.domain.MatchedUserPoint;
 import com.gameleaderboard.gameleaderboard.domain.MatchedUserPointWriter;
 import com.gameleaderboard.gameleaderboard.event.MatchedUserPointCreateEvent;
+import com.gameleaderboard.gameleaderboard.handler.EventHandler;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

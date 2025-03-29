@@ -5,7 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gameleaderboard.gameleaderboard.config.KafkaProperties;
 import com.gameleaderboard.gameleaderboard.domain.OutboxReader;
 import com.gameleaderboard.gameleaderboard.event.Event;
-import com.gameleaderboard.gameleaderboard.service.EventHandler;
+import com.gameleaderboard.gameleaderboard.handler.EventHandler;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;

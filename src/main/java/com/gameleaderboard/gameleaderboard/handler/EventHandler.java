@@ -1,4 +1,4 @@
-package com.gameleaderboard.gameleaderboard.service;
+package com.gameleaderboard.gameleaderboard.handler;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -26,28 +26,30 @@ public class EventHandler {
     public void sendEvent(Event event, String topic) {
         Outbox outbox = insertOutbox(event);
         log.info("[sendEvent] Outbox save success entity: " + outbox);
+        TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
+            @Override
+            public void afterCommit() {
+                sendEvent(event, topic, outbox);
+            }
+        });
         sendEvent(event, topic, outbox);
     }
 
     @Transactional
     public void sendEvent(Event event, String topic, Outbox outbox) {
-        TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
-            @Override
-            public void afterCommit() {
-                var future = kafkaTemplate.send(topic, event.getEventId(), event);
-                future.whenComplete((result, ex) -> {
-                    if (ex == null) {
-                        outboxWriter.delete(outbox.getId());
-                        log.info("[sendEvent] Kafka send and delete success entity: " + outbox);
-                    } else {
-                        outbox.updateIsProcessed(false);
-                        outboxWriter.update(outbox);
-                        log.error("[sendEvent] Kafka send fail and outbox update entity: " + outbox, ex);
-                    }
-                });
+        var future = kafkaTemplate.send(topic, event.getEventId(), event);
+        future.whenComplete((result, ex) -> {
+            if (ex == null) {
+                outboxWriter.delete(outbox.getId());
+                log.info("[sendEvent] Kafka send and delete success entity: " + outbox);
+            } else {
+                outbox.updateIsProcessed(false);
+                outboxWriter.update(outbox);
+                log.error("[sendEvent] Kafka send fail and outbox update entity: " + outbox, ex);
             }
         });
     }
+
 
     private Outbox insertOutbox(Event event) {
         try {
