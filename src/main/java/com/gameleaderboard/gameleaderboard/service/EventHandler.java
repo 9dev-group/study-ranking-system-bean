@@ -6,12 +6,14 @@ import com.gameleaderboard.gameleaderboard.domain.Outbox;
 import com.gameleaderboard.gameleaderboard.domain.OutboxWriter;
 import com.gameleaderboard.gameleaderboard.event.Event;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionSynchronization;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class EventHandler {
@@ -23,9 +25,11 @@ public class EventHandler {
     @Transactional
     public void sendEvent(Event event, String topic) {
         Outbox outbox = insertOutbox(event);
+        log.info("[sendEvent] Outbox save success entity: " + outbox);
         sendEvent(event, topic, outbox);
     }
 
+    @Transactional
     public void sendEvent(Event event, String topic, Outbox outbox) {
         TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
             @Override
@@ -34,9 +38,11 @@ public class EventHandler {
                 future.whenComplete((result, ex) -> {
                     if (ex == null) {
                         outboxWriter.delete(outbox.getId());
+                        log.info("[sendEvent] Kafka send and delete success entity: " + outbox);
                     } else {
                         outbox.updateIsProcessed(false);
                         outboxWriter.update(outbox);
+                        log.error("[sendEvent] Kafka send fail and outbox update entity: " + outbox, ex);
                     }
                 });
             }

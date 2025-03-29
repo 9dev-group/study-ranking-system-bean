@@ -20,7 +20,7 @@ public class MatchedUserPointController {
             @PathVariable String userId,
             @RequestBody MatchedUserPointRequest request
     ) {
-        log.info("request point");
+        log.info("[addPoint] request add point userId: " + userId + " matchedId: " + matchedId + " point: " + request.point());
         matchedUserPointService.add(userId, matchedId, request.point());
     }
 }

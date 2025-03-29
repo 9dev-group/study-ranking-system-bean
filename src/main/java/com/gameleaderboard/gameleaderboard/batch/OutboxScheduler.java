@@ -7,10 +7,12 @@ import com.gameleaderboard.gameleaderboard.domain.OutboxReader;
 import com.gameleaderboard.gameleaderboard.event.Event;
 import com.gameleaderboard.gameleaderboard.service.EventHandler;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class OutboxScheduler {
@@ -28,12 +30,14 @@ public class OutboxScheduler {
                     Object event;
                     try {
                         event = objectMapper.readValue(outbox.getPayload(), Class.forName(outbox.getEventFullName()));
+                        eventHandler.sendEvent((Event) event, properties.topic(), outbox);
                     } catch (JsonProcessingException e) {
+                        log.error("[run] JsonProcessingException please check entity: " + outbox, e);
                         throw new RuntimeException(e);
                     } catch (ClassNotFoundException e) {
+                        log.error("[run] ClassNotFoundException please check entity: " + outbox, e);
                         throw new RuntimeException(e);
                     }
-                    eventHandler.sendEvent((Event) event, properties.topic(), outbox);
                 });
 
     }
