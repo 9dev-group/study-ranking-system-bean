@@ -24,7 +24,7 @@ public class OutboxScheduler {
 
     @Scheduled(fixedDelay = 1000 * 10)
     public void run() {
-        outboxReader.findByIsProcessed(true, PageRequest.of(0, 100))
+        outboxReader.findByIsProcessed(false, PageRequest.of(0, 100))
                 // todo 후에 병렬처리
                 .forEach(outbox -> {
                     Object event;

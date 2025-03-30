@@ -32,7 +32,6 @@ public class EventHandler {
                 sendEvent(event, topic, outbox);
             }
         });
-        sendEvent(event, topic, outbox);
     }
 
     @Transactional

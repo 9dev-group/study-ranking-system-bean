@@ -12,6 +12,6 @@ public class MatchedUserPointCreateEvent implements Event {
     private String matchedId;
     private String userId;
     private Long point;
-    private Long pointedA;
+    private Long pointedAt;
     private String eventId;
 }
