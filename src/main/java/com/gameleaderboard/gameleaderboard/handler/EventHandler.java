@@ -2,8 +2,8 @@ package com.gameleaderboard.gameleaderboard.handler;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.gameleaderboard.gameleaderboard.domain.Outbox;
-import com.gameleaderboard.gameleaderboard.domain.OutboxWriter;
+import com.gameleaderboard.gameleaderboard.domain.outbox.Outbox;
+import com.gameleaderboard.gameleaderboard.domain.outbox.OutboxWriter;
 import com.gameleaderboard.gameleaderboard.event.Event;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -36,7 +36,7 @@ public class EventHandler {
 
     @Transactional
     public void sendEvent(Event event, String topic, Outbox outbox) {
-        var future = kafkaTemplate.send(topic, event.getEventId(), event);
+        var future = kafkaTemplate.send(topic, event.getPartitionId(), event);
         future.whenComplete((result, ex) -> {
             if (ex == null) {
                 outboxWriter.delete(outbox.getId());

@@ -1,4 +1,4 @@
-package com.gameleaderboard.gameleaderboard.domain;
+package com.gameleaderboard.gameleaderboard.domain.outbox;
 
 import jakarta.persistence.*;
 import lombok.*;

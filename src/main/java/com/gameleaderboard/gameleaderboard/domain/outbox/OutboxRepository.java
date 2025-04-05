@@ -1,4 +1,4 @@
-package com.gameleaderboard.gameleaderboard.domain;
+package com.gameleaderboard.gameleaderboard.domain.outbox;
 
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;

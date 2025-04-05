@@ -21,6 +21,6 @@ public class MatchedUserPointController {
             @RequestBody MatchedUserPointRequest request
     ) {
         log.info("[addPoint] request add point userId: " + userId + " matchedId: " + matchedId + " point: " + request.point());
-        matchedUserPointService.add(userId, matchedId, request.point());
+        matchedUserPointService.add(userId, matchedId, request.point(), request.matchedAt());
     }
 }

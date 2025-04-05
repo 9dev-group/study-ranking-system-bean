@@ -4,24 +4,23 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 
-@Getter
+import java.time.Instant;
+
+@Entity(name = "daily_user_leaderboard")
 @AllArgsConstructor
 @NoArgsConstructor
-@Builder
-@Entity(name = "matched_user_point")
-@ToString
-public class MatchedUserPoint {
+public class DailyUserLeaderboard {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    private Instant date;
     private String userId;
-    private String matchedId;
     private Long point;
-    private Long pointedAt;
-    private Long matchedAt;
     private Long createdAt;
+    private Long updatedAt;
 
 }

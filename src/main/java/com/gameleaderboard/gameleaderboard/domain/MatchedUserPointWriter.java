@@ -14,7 +14,7 @@ public class MatchedUserPointWriter {
 
     private final MatchedUserPointRepository matchedUserPointRepository;
 
-    public MatchedUserPoint insert(String userId, String matchedId, Long point, Instant pointedAt) {
+    public MatchedUserPoint insert(String userId, String matchedId, Long point, Instant pointedAt, Long matchedAt) {
         return matchedUserPointRepository.save(
                 MatchedUserPoint
                         .builder()
@@ -22,6 +22,7 @@ public class MatchedUserPointWriter {
                         .matchedId(matchedId)
                         .point(point)
                         .pointedAt(pointedAt.toEpochMilli())
+                        .matchedAt(matchedAt)
                         .createdAt(Instant.now().toEpochMilli())
                         .build()
         );

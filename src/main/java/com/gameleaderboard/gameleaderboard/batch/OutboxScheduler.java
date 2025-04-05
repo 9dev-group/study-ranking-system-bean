@@ -3,7 +3,7 @@ package com.gameleaderboard.gameleaderboard.batch;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gameleaderboard.gameleaderboard.config.KafkaProperties;
-import com.gameleaderboard.gameleaderboard.domain.OutboxReader;
+import com.gameleaderboard.gameleaderboard.domain.outbox.OutboxReader;
 import com.gameleaderboard.gameleaderboard.event.Event;
 import com.gameleaderboard.gameleaderboard.handler.EventHandler;
 import lombok.RequiredArgsConstructor;

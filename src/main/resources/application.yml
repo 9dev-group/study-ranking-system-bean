@@ -14,15 +14,25 @@ spring:
   jpa:
     generate-ddl: true
     hibernate:
-      ddl-auto: create-drop
+      ddl-auto: update
     properties:
       hibernate:
         dialect: org.hibernate.dialect.MySQL8Dialect
     show-sql: true
 
+  data:
+    redis:
+      url: redis://localhost:6379
+      client-type: lettuce
+      lettuce:
+        pool:
+          max-active: 8
+          max-idle: 8
+          min-idle: 1
+          max-wait: 1000ms
 
 kafka:
-  host: "kafka1:19092,kafka1:29092,kafka1:39092"
+  host: "localhost:9092"
   topic: "leaderboard.point"
 
 server:

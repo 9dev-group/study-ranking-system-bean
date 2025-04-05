@@ -11,6 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
+import java.util.UUID;
 
 @Slf4j
 @Service
@@ -22,11 +23,19 @@ public class MatchedUserPointService {
     private final KafkaProperties properties;
 
     @Transactional
-    public void add(String userId, String matchedId, Long point) {
+    public void add(String userId, String matchedId, Long point, Long matchedAt) {
         var now = Instant.now();
-        MatchedUserPoint entity = matchedUserPointWriter.insert(userId, matchedId, point, now);
+        MatchedUserPoint entity = matchedUserPointWriter.insert(userId, matchedId, point, now, matchedAt);
         log.info("[add] MatchedUserPoint save success entity: " + entity);
-        var event = new MatchedUserPointCreateEvent(entity.getId(), matchedId, userId, point, now.toEpochMilli(), userId);
+        var event = new MatchedUserPointCreateEvent(
+                entity.getId(),
+                matchedId,
+                userId,
+                point,
+                matchedAt,
+                UUID.randomUUID().toString(),
+                userId
+        );
         eventHandler.sendEvent(event, properties.topic());
     }
 

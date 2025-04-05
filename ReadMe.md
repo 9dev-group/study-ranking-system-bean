@@ -39,6 +39,7 @@
 ## 시퀀스다이어그램
 
 ### point 적재 flow
+
 ```mermaid
 sequenceDiagram
   participant user
@@ -115,18 +116,18 @@ sequenceDiagram
 - matched_id를 기준으로 사용자가 얼마나 포인트를 쌓았는지 확인 합니다.
 - index
     - matched_id, point
-    - user_id, matched_id(uk) 
+    - user_id, matched_id(uk)
 
-| field      | type   | pk  | Description    | 
-|------------|--------|-----|----------------|
-| id         | Number | o   | id             |
-| matched_id | String |     | game 대전 id     |
-| user_id    | String |     | 사용자 id         |
-| point      | Number |     | 획득한 point      |
-| pointed_at | Long   |     | point 획득한 시간   |
-| created_at | Long   |     | 생성 시간          |
+| field      | type   | pk  | Description | 
+|------------|--------|-----|-------------|
+| id         | Number | o   | id          |
+| matched_id | String |     | game 대전 id  |
+| user_id    | String |     | 사용자 id      |
+| point      | Number |     | 획득한 point   |
+| updated_at | Long   |     | 수정 시간       |
+| created_at | Long   |     | 생성 시간       |
 
-## DailyLeaderboard
+## DailyUserLeaderboard
 
 - 일별로 사용자별 랭킹을 조회할 수 있습니다.
 - index
@@ -142,7 +143,6 @@ sequenceDiagram
 | point      | Number   |     | 획득한 point    |
 | created_at | Long     |     | 생성 시간        |
 | updated_at | Long     |     | 수정 시간        |
-
 
 ## OutBox
 
@@ -161,14 +161,16 @@ sequenceDiagram
 
 ## Main 로직 설명
 
-###  EventHandler
+### EventHandler
+
 #### description
 
-- Outbox 테이블에 데이터를 insert 합니다. 
+- Outbox 테이블에 데이터를 insert 합니다.
 - insert 가 성공하면 kafka event 를 발행 합니다.
 - kafka send 결과에 따른 후처리를 whenComplete(callback) 함수로 처리합니다.
 
 ### OutboxScheduler
+
 #### description
 
 - event 발행이 실패한 경우 scheduler 를 통해서 event 를 발행합니다.
