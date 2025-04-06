@@ -1,0 +1,74 @@
+version: '3'
+services:
+  zookeeper-01:
+    hostname: zookeeper01
+    image: ghcr.io/arm64-compat/confluentinc/cp-zookeeper:7.1.1
+    environment:
+      ZOOKEEPER_SERVER_ID: 1
+      ZOOKEEPER_DATA_DIR: /zookeeper/data
+      ZOOKEEPER_CLIENT_PORT: 12181
+    ports:
+      - 12181:12181
+    volumes:
+      - ./zookeeper/data/1:/zookeeper/data
+
+  kafka-01:
+    image: ghcr.io/arm64-compat/confluentinc/cp-kafka:6.2.5
+    hostname: kafka01
+    depends_on:
+      - zookeeper-01
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper01:12181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka01:19092,PLAINTEXT_HOST://localhost:9092
+      KAFKA_LOG_DIRS: /kafka
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:19092,PLAINTEXT_HOST://0.0.0.0:9092
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+    ports:
+      - 19092:19092
+      - 9092:9092
+    volumes:
+      - ./kafka/logs/1:/kafka
+
+  akhq0:
+    image: tchiotludo/akhq:latest
+    hostname: akhq0
+    depends_on:
+      - kafka-01
+    environment:
+      AKHQ_CONFIGURATION: |
+        akhq:
+          connections:
+            kafka:
+              properties:
+                bootstrap.servers: kafka01:19092
+    ports:
+      - 8080:8080
+
+  mysql0:
+    image: mysql:8.0
+    container_name: mysql0
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_USER: mpro
+      MYSQL_PASSWORD: mpro1234
+      MYSQL_ROOT_USERNAME: root
+      MYSQL_ROOT_PASSWORD: mpro1234
+      MYSQL_DATABASE: leaderboard
+    command:
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
+    volumes:
+      - ./data/mysql/:/var/lib/mysql
+
+  redis0:
+    container_name: redis0
+    image: redis:latest
+    ports:
+      - 6379:6379
+    command: redis-server /usr/local/conf/redis.conf
+    volumes:
+      - ./data/redis:/data
+      - ./conf/redis.conf:/usr/local/conf/redis.conf
