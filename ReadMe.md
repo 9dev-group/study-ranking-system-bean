@@ -144,6 +144,8 @@ sequenceDiagram
 - index
     - matched_id, user_id
     - user_id
+    - CREATE INDEX idx_matched_user ON match_user_point (matched_id, user_id);
+      CREATE INDEX idx_user ON match_user_point (user_id);
 
 | field      | type   | pk  | Description  | 
 |------------|--------|-----|--------------|
@@ -162,6 +164,9 @@ sequenceDiagram
 - index
     - matched_id, point
     - user_id, matched_id(uk)
+    - ALTER TABLE match_user_leaderboard
+      ADD CONSTRAINT uk_user_match UNIQUE (user_id, matched_id); 
+    - CREATE INDEX idx_matched_point ON match_user_leaderboard (matched_id, point);
 
 | field      | type   | pk  | Description | 
 |------------|--------|-----|-------------|
@@ -179,6 +184,10 @@ sequenceDiagram
     - date, user_id(uk)
     - date, user_id, point
     - user_id, date
+    - ALTER TABLE daily_user_leaderboard
+      ADD CONSTRAINT uk_date_user UNIQUE (date, user_id); 
+    - CREATE INDEX idx_date_user_point ON daily_user_leaderboard (date, user_id, point); 
+    - CREATE INDEX idx_user_date ON daily_user_leaderboard (user_id, date);
 
 | field      | type     | pk  | Description  | 
 |------------|----------|-----|--------------|
@@ -193,7 +202,8 @@ sequenceDiagram
 
 - outbox pattern 을 지원하기 위한 테이블
 - index
-    - id, isProcessed
+    - isProcessed
+    - CREATE INDEX idx_is_processed ON outbox (is_processed);
 
 | field           | type    | pk  | Description       | 
 |-----------------|---------|-----|-------------------|
